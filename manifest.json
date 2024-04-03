@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "version": "1.0",
+  "name": "Quora",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.quora.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
