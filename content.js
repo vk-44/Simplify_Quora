@@ -1,55 +1,65 @@
-//Removes ads
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  const adsElement = document.getElementsByClassName("q-sticky").item(0);
+//   const signInElement = document
+//     .getElementsByClassName(
+//       "q-flex qu-alignItems--center qu-justifyContent--center qu-overflow--hidden qu-zIndex--blocking_wall"
+//     )
+//     .item(0);
 
-  const promotedList = document.getElementsByClassName(
-    "spacing_log_question_page_ad"
-  );
+//   const overflowElement = document
+//     .getElementsByClassName(
+//       "q-platform--desktop q-color-mode--dark qu-color--gray_ultralight"
+//     )
+//     .item(0);
 
-  const botElement = document
-    .getElementsByClassName(
-      "q-click-wrapper qu-display--block qu-tapHighlight--white qu-cursor--pointer ClickWrapper___StyledClickWrapperBox-zoqi4f-0 daLTSH"
-    )
-    .item(0);
+//     //Removing SignIn popup box and background blur
+//     signInElement.style.display = "none";
+//     signInElement.parentElement.previousElementSibling.style.filter = "";
 
-  const signInElement = document
-    .getElementsByClassName(
-      "q-flex qu-alignItems--center qu-justifyContent--center qu-overflow--hidden qu-zIndex--blocking_wall"
-    )
-    .item(0);
+//     //Removing overflow property
+//     overflowElement.style.overflow = "";
 
-  const overflowElement = document
-    .getElementsByClassName(
-      "q-platform--desktop q-color-mode--dark qu-color--gray_ultralight"
-    )
-    .item(0);
+// Send a message to background script to get data
+chrome.runtime.sendMessage({ action: "getData" }, (response) => {
+  console.log("Received data:", response);
 
-  const relatedList = document.getElementsByClassName("q-box qu-mb--tiny");
+  if (response.signin) {
+    const URL = window.location.href;
 
-  if (message.todo === "ads" && adsElement) {
-    adsElement.style.display = "none";
-  }
-
-  if (message.todo === "promoted" && promotedList) {
-    for (const item of promotedList) {
-      item.style.display = "none";
+    if (!URL.endsWith("?share=1")) {
+      const newURL = URL + "?share=1";
+      chrome.runtime.sendMessage({ action: "modifyUrl", newURL });
     }
   }
 
-  if (message.todo === "bot" && botElement) {
-    botElement.style.display = "none";
+  if (response.ads) {
+    const adsElement = document.getElementsByClassName("q-sticky").item(0);
+    if (adsElement) adsElement.style.display = "none";
   }
 
-  if (message.todo === "sign" && signInElement && overflowElement) {
-    //Removing SignIn popup box and background blur
-    signInElement.style.display = "none";
-    signInElement.parentElement.previousElementSibling.style.filter = "";
+  if (response.promoted) {
+    const promotedList = document.getElementsByClassName(
+      "spacing_log_question_page_ad"
+    );
 
-    //Removing overflow property
-    overflowElement.style.overflow = "";
+    if (promotedList) {
+      for (const item of promotedList) {
+        item.style.display = "none";
+      }
+    }
   }
 
-  if (message.todo === "related" && relatedList) {
+  if (response.bot) {
+    const botElement = document
+      .getElementsByClassName(
+        "q-click-wrapper qu-display--block qu-tapHighlight--white qu-cursor--pointer ClickWrapper___StyledClickWrapperBox-zoqi4f-0 daLTSH"
+      )
+      .item(0);
+
+    if (botElement) botElement.style.display = "none";
+  }
+
+  if (response.related) {
+    const relatedList = document.getElementsByClassName("q-box qu-mb--tiny");
+
     for (const item of relatedList) {
       function findParent(element, className) {
         if (!element || !element.classList) return null;
@@ -64,25 +74,3 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
   }
 });
-
-// console.log(document.getElementsByClassName("spacing_log_question_page_ad"));
-
-// quora --- https://www.quora.com/I-am-25-Can-I-learn-React-and-get-a-job?share=1
-
-// blur remove -----
-// const html = document.getElementsByClassName("q-platform--desktop q-color-mode--dark qu-color--gray_ultralight")
-
-// document.getElementsByClassName("q-flex qu-alignItems--center qu-justifyContent--center qu-overflow--hidden qu-zIndex--blocking_wall")
-
-// child.item(0).parentElement.previousElementSibling.style.filter = "none"
-
-// related answer remove ----
-// const deeplyNestedCode = document.getElementsByClassName("q-box qu-mb--tiny")
-
-// "q-box dom_annotate_question_answer_item_2 qu-borderAll qu-borderRadius--small qu-borderColor--raised qu-boxShadow--small qu-mb--small qu-bg--raised"
-
-// promoted answer remove ---- const ad = document.getElementsByClassName("spacing_log_question_page_ad")
-
-// ads remove ---- const ads = document.getElementsByClassName("q-sticky")
-
-// bot remove -------- q-click-wrapper qu-display--block qu-tapHighlight--white qu-cursor--pointer ClickWrapper___StyledClickWrapperBox-zoqi4f-0 daLTSH

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "version": "1.0",
-  "name": "Quora",
+  "name": "Simplify Quora",
   "action": {
     "default_popup": "popup.html"
   },
@@ -10,5 +10,9 @@
       "matches": ["https://www.quora.com/*"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

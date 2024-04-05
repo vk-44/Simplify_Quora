@@ -1,9 +1,8 @@
-// // Listen for messages from content scripts
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "getMyData") {
-    chrome.storage.local
-      .get(["signin"])
-      .then((res) => sendResponse(res.signin));
+//Listen for messages from content scripts
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "getData") {
+    chrome.storage.local.get(["obj"]).then((res) => sendResponse(res.obj));
+
     // Return true to indicate we will respond asynchronously
     return true;
   }
@@ -12,9 +11,3 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     chrome.tabs.update(sender.tab.id, { url: request.newURL });
   }
 });
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.action === "modifyUrl") {
-//     chrome.tabs.update(sender.tab.id, { url: message.newURL });
-//   }
-// });

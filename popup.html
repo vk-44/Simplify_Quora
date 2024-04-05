@@ -4,14 +4,29 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <h1>Title</h1>
-    <button id="ads">Remove ads</button>
-    <button id="promoted">Remove promoted</button>
-    <button id="bot">Remove bot</button>
-    <button id="signIn">Remove sign In</button>
-    <button id="related">Remvoe related</button>
+    <h1 class="title">Simplify Quora</h1>
+    <div class="container">
+      <label for="signin">Remove Sign In</label>
+      <input type="checkbox" id="signin" />
+    </div>
+    <div class="container">
+      <label for="ads">Remove ads</label> <input type="checkbox" id="ads" />
+    </div>
+    <div class="container">
+      <label for="promoted">Remove promoted</label>
+      <input type="checkbox" id="promoted" />
+    </div>
+    <div class="container">
+      <label for="bot">Remove bot</label> <input type="checkbox" id="bot" />
+    </div>
+    <div class="container">
+      <label for="related">Remove related</label>
+      <input type="checkbox" id="related" />
+    </div>
   </body>
+
   <script src="popup.js"></script>
 </html>
