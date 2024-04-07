@@ -1,27 +1,30 @@
-//   const signInElement = document
-//     .getElementsByClassName(
-//       "q-flex qu-alignItems--center qu-justifyContent--center qu-overflow--hidden qu-zIndex--blocking_wall"
-//     )
-//     .item(0);
+//Global Variables
+const URL = window.location.href;
 
-//   const overflowElement = document
-//     .getElementsByClassName(
-//       "q-platform--desktop q-color-mode--dark qu-color--gray_ultralight"
-//     )
-//     .item(0);
+//Utility function used by other functions further down in code
+const classRemover = (element, className) => {
+  const findParent = (element, className) => {
+    if (!element || !element.classList) return null;
+    if (element.classList.contains(className)) {
+      return element;
+    } else {
+      return findParent(element.parentElement, className);
+    }
+  };
 
-//     //Removing SignIn popup box and background blur
-//     signInElement.style.display = "none";
-//     signInElement.parentElement.previousElementSibling.style.filter = "";
-
-//     //Removing overflow property
-//     overflowElement.style.overflow = "";
+  const parent = findParent(element, className);
+  if (parent) parent.style.display = "none";
+};
 
 //Function to remove signin popup
 const signin = () => {
-  const URL = window.location.href;
+  const signinPopup = document
+    .getElementsByClassName(
+      "q-flex qu-alignItems--center qu-justifyContent--center qu-overflow--hidden qu-zIndex--blocking_wall"
+    )
+    .item(0);
 
-  if (!URL.endsWith("?share=1")) {
+  if (!URL.endsWith("?share=1") && signinPopup) {
     const newURL = URL + "?share=1";
     chrome.runtime.sendMessage({ action: "modifyUrl", newURL });
   }
@@ -30,7 +33,16 @@ const signin = () => {
 //Function to remove ads
 const ads = () => {
   const adsElement = document.getElementsByClassName("q-sticky").item(0);
+  const adsInMainElement = document.getElementsByClassName(
+    "q-text qu-dynamicFontSize--small qu-color--gray_light qu-passColorToLinks"
+  );
+
   if (adsElement) adsElement.style.display = "none";
+  for (const item of adsInMainElement) {
+    if (item.innerHTML.startsWith("Ad")) {
+      classRemover(item, "qu-borderBottom");
+    }
+  }
 };
 
 //Function to remove promoted ads and sponsorships
@@ -47,23 +59,9 @@ const promoted = () => {
   }
 };
 
-//Utility function used by functions further down in code
-const classRemover = (element, className) => {
-  const findParent = (element, className) => {
-    if (!element || !element.classList) return null;
-    if (element.classList.contains(className)) {
-      return element;
-    } else {
-      return findParent(element.parentElement, className);
-    }
-  };
-
-  const parent = findParent(element, className);
-  if (parent) parent.style.display = "none";
-};
-
 //Function to remove bots
 const bot = () => {
+  console.log("bot");
   const botElementList = document.querySelectorAll(
     ".q-inlineFlex.qu-alignItems--center.qu-wordBreak--break-word"
   );
@@ -85,6 +83,7 @@ const related = () => {
 
   // for (const item of relatedList) classRemover(item, "qu-borderAll");
 
+  if (URL.includes("/unanswered/")) return;
   const popup = document
     .getElementsByClassName(
       "q-click-wrapper qu-active--bg--darken qu-borderRadius--pill qu-alignItems--center qu-justifyContent--center qu-whiteSpace--nowrap qu-userSelect--none qu-display--inline-flex qu-tapHighlight--white qu-textAlign--center qu-cursor--pointer qu-hover--bg--darken ClickWrapper___StyledClickWrapperBox-zoqi4f-0 daLTSH base___StyledClickWrapper-lx6eke-1 hDHfXl  "
@@ -99,12 +98,39 @@ const related = () => {
       )
       .item(1)
       .click();
-  }, 350);
+
+    setTimeout(() => {
+      bot();
+    }, 1000);
+  }, 1000);
 };
 
 // Send a message to background script to get data
 chrome.runtime.sendMessage({ action: "getData" }, (response) => {
   console.log("Received data:", response);
+
+  // Create a MutationObserver to watch for changes in the DOM
+  const observer = new MutationObserver((mutationsList, observer) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+        for (let node of mutation.addedNodes) {
+          if (response.bot && node.classList.contains("q-click-wrapper")) bot();
+
+          if (
+            response.promoted &&
+            node.classList.contains("spacing_log_question_page_ad")
+          )
+            promoted();
+        }
+      }
+    }
+  });
+
+  const targetNode = document.getElementById("mainContent");
+  observer.observe(targetNode, {
+    childList: true,
+    subtree: true,
+  });
 
   if (response.signin) signin();
 
@@ -115,24 +141,8 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
   if (response.bot) bot();
 
   if (response.related) related();
-
-  // Create a MutationObserver to watch for changes in the DOM
-  const observer = new MutationObserver((mutationsList, observer) => {
-    for (let mutation of mutationsList) {
-      if (mutation.type === "childList") {
-        // Check if any new elements were added
-        if (mutation.addedNodes.length > 0) {
-          // if (response.related) related();
-          if (response.promoted) promoted();
-          if (response.bot) bot();
-          // handleLazyLoad();
-        }
-      }
-    }
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
 });
+
+//Work on related function
+//Use loading spinner while page loads
+//Hightlight originally answered
