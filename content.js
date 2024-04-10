@@ -5,7 +5,7 @@ const URL = window.location.href;
 const classRemover = (element, className) => {
   const findParent = (element, className) => {
     if (!element || !element.classList) return null;
-    if (element.classList.contains(className)) {
+    if (element.classList?.contains(className)) {
       return element;
     } else {
       return findParent(element.parentElement, className);
@@ -18,11 +18,9 @@ const classRemover = (element, className) => {
 
 //Function to remove signin popup
 const signin = () => {
-  const signinPopup = document
-    .getElementsByClassName(
-      "q-flex qu-alignItems--center qu-justifyContent--center qu-overflow--hidden qu-zIndex--blocking_wall"
-    )
-    .item(0);
+  const signinPopup = document.querySelector(
+    ".q-flex.qu-alignItems--center.qu-justifyContent--center.qu-overflow--hidden.qu-zIndex--blocking_wall"
+  );
 
   if (!URL.endsWith("?share=1") && signinPopup) {
     const newURL = URL + "?share=1";
@@ -32,9 +30,9 @@ const signin = () => {
 
 //Function to remove ads
 const ads = () => {
-  const adsElement = document.getElementsByClassName("q-sticky").item(0);
-  const adsInMainElement = document.getElementsByClassName(
-    "q-text qu-dynamicFontSize--small qu-color--gray_light qu-passColorToLinks"
+  const adsElement = document.querySelector(".q-sticky");
+  const adsInMainElement = document.querySelectorAll(
+    ".q-text.qu-dynamicFontSize--small.qu-color--gray_light.qu-passColorToLinks"
   );
 
   if (adsElement) adsElement.style.display = "none";
@@ -47,9 +45,8 @@ const ads = () => {
 
 //Function to remove promoted ads and sponsorships
 const promoted = () => {
-  console.log("promoted");
-  const promotedList = document.getElementsByClassName(
-    "spacing_log_question_page_ad"
+  const promotedList = document.querySelectorAll(
+    ".spacing_log_question_page_ad"
   );
 
   if (promotedList) {
@@ -59,66 +56,113 @@ const promoted = () => {
   }
 };
 
-//Function to remove bots
-const bot = () => {
-  console.log("bot");
-  const botElementList = document.querySelectorAll(
-    ".q-inlineFlex.qu-alignItems--center.qu-wordBreak--break-word"
-  );
-
-  let botElement;
-  for (const item of botElementList) {
-    const val = item.querySelector("span");
-    const res = val.querySelector("span").innerHTML;
-    if (res === "Assistant") botElement = item;
-  }
-
-  if (botElement) classRemover(botElement, "qu-borderAll");
-};
-
 //Function to remove related answers
 const related = () => {
-  console.log("related");
-  // const relatedList = document.getElementsByClassName("q-box qu-mb--tiny");
-
-  // for (const item of relatedList) classRemover(item, "qu-borderAll");
-
   if (URL.includes("/unanswered/")) return;
   const popup = document
-    .getElementsByClassName(
-      "q-click-wrapper qu-active--bg--darken qu-borderRadius--pill qu-alignItems--center qu-justifyContent--center qu-whiteSpace--nowrap qu-userSelect--none qu-display--inline-flex qu-tapHighlight--white qu-textAlign--center qu-cursor--pointer qu-hover--bg--darken ClickWrapper___StyledClickWrapperBox-zoqi4f-0 daLTSH base___StyledClickWrapper-lx6eke-1 hDHfXl  "
+    .querySelectorAll(
+      ".q-click-wrapper.qu-active--bg--darken.qu-borderRadius--pill.qu-alignItems--center.qu-justifyContent--center.qu-whiteSpace--nowrap.qu-userSelect--none.qu-display--inline-flex.qu-tapHighlight--white.qu-textAlign--center.qu-cursor--pointer.qu-hover--bg--darken.ClickWrapper___StyledClickWrapperBox-zoqi4f-0.daLTSH.base___StyledClickWrapper-lx6eke-1.hDHfXl"
     )
-    .item(1)
-    .click();
+    .item(1);
 
-  setTimeout(() => {
-    document
-      .getElementsByClassName(
-        "q-click-wrapper qu-p--medium qu-px--medium qu-py--small qu-alignItems--center qu-justifyContent--space-between qu-display--flex qu-bg--raised qu-tapHighlight--white qu-cursor--pointer qu-hover--bg--darken qu-hover--textDecoration--underline ClickWrapper___StyledClickWrapperBox-zoqi4f-0 daLTSH puppeteer_test_popover_item"
-      )
-      .item(1)
-      .click();
-
+  if (popup) {
+    popup.click();
     setTimeout(() => {
-      bot();
-    }, 1000);
-  }, 1000);
+      const answersButton = document
+        .querySelectorAll(
+          ".q-click-wrapper.qu-p--medium.qu-px--medium.qu-py--small.qu-alignItems--center.qu-justifyContent--space-between.qu-display--flex.qu-bg--raised.qu-tapHighlight--white.qu-cursor--pointer.qu-hover--bg--darken.qu-hover--textDecoration--underline.ClickWrapper___StyledClickWrapperBox-zoqi4f-0.daLTSH.puppeteer_test_popover_item"
+        )
+        .item(1);
+      if (answersButton) {
+        answersButton.click();
+      }
+    }, 2000);
+  }
 };
 
 // Send a message to background script to get data
 chrome.runtime.sendMessage({ action: "getData" }, (response) => {
-  console.log("Received data:", response);
+  const {
+    signin: signinValue,
+    ads: adsValue,
+    promoted: promotedValue,
+    related: relatedValue,
+  } = response;
 
-  // Create a MutationObserver to watch for changes in the DOM
-  const observer = new MutationObserver((mutationsList, observer) => {
+  if (signinValue || adsValue || promotedValue || relatedValue) {
+    const overlay = document.createElement("div");
+    overlay.id = "overlay";
+    overlay.innerHTML = `
+    <style>
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        position: relative;
+        animation: rotate 1s linear infinite
+      }
+      .spinner::before , .spinner::after {
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        inset: 0px;
+        border-radius: 50%;
+        border: 5px solid #FFF;
+        animation: prixClipFix 2s linear infinite ;
+      }
+      .spinner::after{
+        border-color: #f52936;
+        animation: prixClipFix 2s linear infinite , rotate 0.5s linear infinite reverse;
+        inset: 6px;
+      }
+
+      @keyframes rotate {
+        0%   {transform: rotate(0deg)}
+        100%   {transform: rotate(360deg)}
+      }
+
+      @keyframes prixClipFix {
+        0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+        25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+        50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+        75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+        100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+      }
+
+        #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      #overlay p {
+        margin-top: 10px;
+        font-weight: bold;
+        color: #f52936;
+      }
+    </style>
+    <div class="spinner"></div>
+    <p>Clearing the Clutter...</p>
+  `;
+    document.body.appendChild(overlay);
+  }
+
+  // Create a MutationObserver to watch for changes in the targetNode
+  const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-        for (let node of mutation.addedNodes) {
-          if (response.bot && node.classList.contains("q-click-wrapper")) bot();
-
+        for (const node of mutation.addedNodes) {
           if (
-            response.promoted &&
-            node.classList.contains("spacing_log_question_page_ad")
+            promotedValue &&
+            node.classList?.contains("spacing_log_question_page_ad")
           )
             promoted();
         }
@@ -132,17 +176,12 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     subtree: true,
   });
 
-  if (response.signin) signin();
+  signinValue && signin();
+  adsValue && ads();
+  promotedValue && promoted();
+  relatedValue && related();
 
-  if (response.ads) ads();
-
-  if (response.promoted) promoted();
-
-  if (response.bot) bot();
-
-  if (response.related) related();
+  setTimeout(() => {
+    document.getElementById("overlay")?.remove();
+  }, 3000);
 });
-
-//Work on related function
-//Use loading spinner while page loads
-//Hightlight originally answered

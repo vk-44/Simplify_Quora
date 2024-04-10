@@ -5,28 +5,42 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="popup.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <title>Simplify Quora</title>
   </head>
   <body>
-    <h1 class="title">Simplify Quora</h1>
-    <div class="container">
-      <label for="signin">Remove Sign In</label>
-      <input type="checkbox" id="signin" />
-    </div>
-    <div class="container">
-      <label for="ads">Remove ads</label> <input type="checkbox" id="ads" />
-    </div>
-    <div class="container">
-      <label for="promoted">Remove promoted</label>
-      <input type="checkbox" id="promoted" />
-    </div>
-    <div class="container">
-      <label for="bot">Remove bot</label> <input type="checkbox" id="bot" />
-    </div>
-    <div class="container">
-      <label for="related">Remove related</label>
-      <input type="checkbox" id="related" />
-    </div>
+    <header>
+      <h1 class="title">Simplify Quora</h1>
+    </header>
+    <main class="popup">
+      <div class="option">
+        <label for="signinCheckbox">Remove Sign In Popup</label>
+        <input type="checkbox" id="signinCheckbox" class="input-checkbox" />
+      </div>
+      <div class="option">
+        <label for="adsCheckbox">Remove Advertisments</label>
+        <input type="checkbox" id="adsCheckbox" />
+      </div>
+      <div class="option">
+        <label for="promotedCheckbox"
+          >Remove Promoted & <br />
+          Sponsored Contents
+        </label>
+        <input type="checkbox" id="promotedCheckbox" />
+      </div>
+      <div class="option">
+        <label for="relatedCheckbox">Remove Related Answers</label>
+        <input type="checkbox" id="relatedCheckbox" />
+      </div>
+    </main>
+    <footer>
+      <p class="note">Note: Changes may require refreshing the page.</p>
+    </footer>
+    <script src="popup.js"></script>
   </body>
-
-  <script src="popup.js"></script>
 </html>

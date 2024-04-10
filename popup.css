@@ -5,25 +5,47 @@
 }
 
 body {
+  font-family: "baskervville";
+  background-color: #262626;
+  width: 300px;
   height: 350px;
-  width: 250px;
-  margin: 10px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  background-color: beige;
-}
-
-.container {
-  font-family: sans-serif;
-  font-weight: 500;
-  font-size: medium;
-  padding: 10px;
-  margin: 10px;
-  border: 2px;
-  display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  align-items: center;
+  text-align: center;
 }
 
 .title {
-  font-family: sans-serif;
+  font-size: xx-large;
+  color: #f52936;
+}
+
+label {
+  color: #cdcdcd;
+}
+
+.note {
+  color: rgb(142, 144, 146);
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 250px;
+  width: 250px;
+}
+
+.option {
+  font-size: medium;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+input {
+  height: 18px;
+  width: 18px;
 }
