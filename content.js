@@ -3,6 +3,7 @@ const URL = window.location.href;
 
 //Utility function used by other functions further down in code
 const classRemover = (element, className) => {
+  //Finds the parent element of given child element. If found, sets the display to "none"
   const findParent = (element, className) => {
     if (!element || !element.classList) return null;
     if (element.classList?.contains(className)) {
@@ -24,7 +25,8 @@ const signin = () => {
 
   if (!URL.endsWith("?share=1") && signinPopup) {
     const newURL = URL + "?share=1";
-    chrome.runtime.sendMessage({ action: "modifyUrl", newURL });
+    //Sends message to background.js to modify the URL
+    chrome.runtime.sendMessage({ action: "modifyURL", newURL });
   }
 };
 
@@ -81,7 +83,7 @@ const related = () => {
 };
 
 // Send a message to background script to get data
-chrome.runtime.sendMessage({ action: "getData" }, (response) => {
+chrome.runtime.sendMessage({ action: "getObj" }, (response) => {
   const {
     signin: signinValue,
     ads: adsValue,
@@ -89,6 +91,7 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     related: relatedValue,
   } = response;
 
+  //Adding a loading spinner
   if (signinValue || adsValue || promotedValue || relatedValue) {
     const overlay = document.createElement("div");
     overlay.id = "overlay";
@@ -176,11 +179,13 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     subtree: true,
   });
 
+  //Initially called when the content script fires in browser
   signinValue && signin();
   adsValue && ads();
   promotedValue && promoted();
   relatedValue && related();
 
+  //Wait for 3 seconds and remove the loading spinner
   setTimeout(() => {
     document.getElementById("overlay")?.remove();
   }, 3000);
