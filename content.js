@@ -31,17 +31,20 @@ const signin = () => {
 };
 
 //Function to remove ads
+let adsInMainContent = false;
 const ads = () => {
   const adsElement = document.querySelector(".q-sticky");
-  const adsInMainElement = document.querySelectorAll(
+  const adsInMainContentElement = document.querySelector(
     ".q-text.qu-dynamicFontSize--small.qu-color--gray_light.qu-passColorToLinks"
   );
 
   if (adsElement) adsElement.style.display = "none";
-  for (const item of adsInMainElement) {
-    if (item.innerHTML.startsWith("Ad")) {
-      classRemover(item, "qu-borderBottom");
-    }
+  if (
+    adsInMainContentElement &&
+    adsInMainContentElement.innerHTML.startsWith("Ad")
+  ) {
+    adsInMainContent = true;
+    classRemover(adsInMainContentElement, "qu-borderBottom");
   }
 };
 
@@ -65,7 +68,7 @@ const related = () => {
     .querySelectorAll(
       ".q-click-wrapper.qu-active--bg--darken.qu-borderRadius--pill.qu-alignItems--center.qu-justifyContent--center.qu-whiteSpace--nowrap.qu-userSelect--none.qu-display--inline-flex.qu-tapHighlight--white.qu-textAlign--center.qu-cursor--pointer.qu-hover--bg--darken.ClickWrapper___StyledClickWrapperBox-zoqi4f-0.daLTSH.base___StyledClickWrapper-lx6eke-1.hDHfXl"
     )
-    .item(1);
+    .item(!adsInMainContent ? 1 : 2);
 
   if (popup) {
     popup.click();
