@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.1",
+  "version": "1.2",
   "name": "Simplify Quora",
   "description": "Removes Sign In popup, Ads, Promoted & sponsored contents and Related Answers from Quora.",
   "action": {
