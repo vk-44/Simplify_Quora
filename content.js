@@ -23,15 +23,14 @@ const signin = () => {
     ".q-flex.qu-alignItems--center.qu-justifyContent--center.qu-overflow--hidden.qu-zIndex--blocking_wall"
   );
 
-  if (!URL.endsWith("?share=1") && signinPopup) {
-    const newURL = URL + "?share=1";
+  if (!URL.endsWith("?") && signinPopup) {
+    const newURL = URL + "?";
     //Sends message to background.js to modify the URL
     chrome.runtime.sendMessage({ action: "modifyURL", newURL });
   }
 };
 
 //Function to remove ads
-let adsInMainContent = false;
 const ads = () => {
   const adsElement = document.querySelector(".q-sticky");
   const adsInMainContentElement = document.querySelector(
@@ -42,10 +41,8 @@ const ads = () => {
   if (
     adsInMainContentElement &&
     adsInMainContentElement.innerHTML.startsWith("Ad")
-  ) {
-    adsInMainContent = true;
+  )
     classRemover(adsInMainContentElement, "qu-borderBottom");
-  }
 };
 
 //Function to remove promoted ads and sponsorships
@@ -64,18 +61,19 @@ const promoted = () => {
 //Function to remove related answers
 const related = () => {
   if (URL.includes("/unanswered/")) return;
-  const popup = document
-    .querySelectorAll(
-      ".q-click-wrapper.qu-active--bg--darken.qu-borderRadius--pill.qu-alignItems--center.qu-justifyContent--center.qu-whiteSpace--nowrap.qu-userSelect--none.qu-display--inline-flex.qu-tapHighlight--white.qu-textAlign--center.qu-cursor--pointer.qu-hover--bg--darken.ClickWrapper___StyledClickWrapperBox-zoqi4f-0.daLTSH.base___StyledClickWrapper-lx6eke-1.hDHfXl"
-    )
-    .item(!adsInMainContent ? 1 : 2);
-
+  const popupList = document.querySelectorAll(
+    ".q-text.qu-ellipsis.qu-whiteSpace--nowrap"
+  );
+  let popup;
+  for (const item of popupList) {
+    if (item.innerHTML.startsWith("All related")) popup = item;
+  }
   if (popup) {
     popup.click();
     setTimeout(() => {
       const answersButton = document
         .querySelectorAll(
-          ".q-click-wrapper.qu-p--medium.qu-px--medium.qu-py--small.qu-alignItems--center.qu-justifyContent--space-between.qu-display--flex.qu-bg--raised.qu-tapHighlight--white.qu-cursor--pointer.qu-hover--bg--darken.qu-hover--textDecoration--underline.ClickWrapper___StyledClickWrapperBox-zoqi4f-0.daLTSH.puppeteer_test_popover_item"
+          ".q-text.qu-dynamicFontSize--small.qu-color--gray_dark"
         )
         .item(1);
       if (answersButton) {
