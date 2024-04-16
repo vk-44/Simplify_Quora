@@ -40,7 +40,7 @@ const ads = () => {
   if (adsElement) adsElement.style.display = "none";
   if (
     adsInMainContentElement &&
-    adsInMainContentElement.innerHTML.startsWith("Ad")
+    adsInMainContentElement.textContent.startsWith("Ad")
   )
     classRemover(adsInMainContentElement, "qu-borderBottom");
 };
@@ -59,27 +59,33 @@ const promoted = () => {
 };
 
 //Function to remove related answers
-const related = () => {
+const related = async () => {
   if (URL.includes("/unanswered/")) return;
+
   const popupList = document.querySelectorAll(
     ".q-text.qu-ellipsis.qu-whiteSpace--nowrap"
   );
+
   let popup;
   for (const item of popupList) {
-    if (item.innerHTML.startsWith("All related")) popup = item;
+    if (item.textContent.startsWith("All related")) {
+      popup = item;
+      break;
+    }
   }
+
   if (popup) {
     popup.click();
-    setTimeout(() => {
-      const answersButton = document
-        .querySelectorAll(
-          ".q-text.qu-dynamicFontSize--small.qu-color--gray_dark"
-        )
-        .item(1);
-      if (answersButton) {
-        answersButton.click();
-      }
-    }, 2000);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
+    const answersButton = document
+      .querySelectorAll(".q-text.qu-dynamicFontSize--small.qu-color--gray_dark")
+      .item(1);
+
+    if (answersButton) answersButton.click();
+
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
+    promoted();
   }
 };
 
@@ -159,26 +165,25 @@ chrome.runtime.sendMessage({ action: "getObj" }, (response) => {
     document.body.appendChild(overlay);
   }
 
-  // Create a MutationObserver to watch for changes in the targetNode
-  const observer = new MutationObserver((mutationsList) => {
-    for (const mutation of mutationsList) {
-      if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-        for (const node of mutation.addedNodes) {
-          if (
-            promotedValue &&
-            node.classList?.contains("spacing_log_question_page_ad")
-          )
-            promoted();
+  if (promotedValue) {
+    // Create a MutationObserver to watch for changes in the targetNode
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+          for (const node of mutation.addedNodes) {
+            if (node.classList?.contains("spacing_log_question_page_ad"))
+              promoted();
+          }
         }
       }
-    }
-  });
+    });
 
-  const targetNode = document.getElementById("mainContent");
-  observer.observe(targetNode, {
-    childList: true,
-    subtree: true,
-  });
+    const targetNode = document.getElementById("mainContent");
+    observer.observe(targetNode, {
+      childList: true,
+      subtree: true,
+    });
+  }
 
   //Initially called when the content script fires in browser
   signinValue && signin();
