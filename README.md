@@ -8,7 +8,7 @@ Are you tired of annoying **Sign In popups**, **Ads**, **Sponsored contents** an
 
 You can now easily install "Simplify Quora" from the Chrome Web Store:
 
-1. Visit the [Simplify Quora Chrome Web Store page](https://chromewebstore.google.com/detail/simplify-quora/figcpnbmmpnhhegeheikjmnokdgghmnp?hl=en-GB&utm_source=ext_sidebar).
+1. Visit the [Simplify Quora Chrome Web Store page](https://chromewebstore.google.com/detail/simplify-quora/figcpnbmmpnhhegeheikjmnokdgghmnp?utm_source=github&utm_medium=social).
 2. Click on the "Add to Chrome" button.
 3. A confirmation dialog will appear, click "Add Extension" to proceed.
 4. Once installed, you should see the "Simplify Quora" extension icon in your Chrome toolbar.
